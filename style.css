@@ -1,0 +1,7 @@
+#player {
+    width: 56px;
+    height: 99px;
+    background-image: url("players.png");
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+}
