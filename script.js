@@ -1,60 +1,76 @@
 const player = document.getElementById("player");
 
 // Sprite sheet info
-const sheetWidth = 676;
-const sheetHeight = 396;
+const sheetWidth = 832;
+const sheetHeight = 3456;
+const cols = 13;
+const rows = 54;
 
-const cols = 12;
-const rows = 4;
-
-const frameWidth = sheetWidth / cols;   
+const frameWidth = sheetWidth / cols;
 const frameHeight = sheetHeight / rows;
 
 // Frames by direction
 const FRAMES = {
-    ArrowRight: [5, 11],
-    ArrowLeft:  [6, 8, 9],
-    ArrowUp:    [7, 10],
-    ArrowDown:  [0, 1, 2, 3, 4]
+    ArrowRight: { row: 11, col: [0, 1, 2, 3, 4, 5, 6, 7, 8] },
+    ArrowLeft: { row: 9, col: [0, 1, 2, 3, 4, 5, 6, 7, 8] },
+    ArrowUp: { row: 8, col: [0, 1, 2, 3, 4, 5, 6, 7, 8] },
+    ArrowDown: { row: 10, col: [0, 1, 2, 3, 4, 5, 6, 7, 8] },
 };
 
 let frameIndex = 0;
-let x = 0;
-let y = 0;
-let speed = 10; // السرعة
+let posX = 0;
+let posY = 0;
+let speed = 0.1;
+let currentKey = null;
 
 document.addEventListener("keydown", (e) => {
-    if (!FRAMES[e.key]) return;
-
-    const framesList = FRAMES[e.key];
-
-    // --- animation frames ---
-    const col = framesList[frameIndex];
-    const row = 0;
-
-    const frameX = col * frameWidth;
-    const frameY = row * frameHeight;
-
-    player.style.backgroundPosition = `-${frameX}px -${frameY}px`;
-
-    frameIndex++;
-    if (frameIndex >= framesList.length) frameIndex = 0;
-
-    // --- movement ---
-    switch (e.key) {
-        case "ArrowRight":
-            x += speed;
-            break;
-        case "ArrowLeft":
-            x -= speed;
-            break;
-        case "ArrowUp":
-            y -= speed;
-            break;
-        case "ArrowDown":
-            y += speed;
-            break;
+    if (FRAMES[e.key]) {
+        currentKey = e.key;
     }
-
-    player.style.transform = `translate(${x}px, ${y}px)`;
 });
+document.addEventListener("keyup", (e) => {
+    if (currentKey === e.key) {
+        console.log('ggggggggggz');
+        
+        currentKey = null;
+        frameIndex = 0;
+    }
+});
+
+let lastTime = 0;
+let animationTimer = 0;
+let animationSpeed = 80;
+
+function update(time) {
+    const delta = time - lastTime;
+    lastTime = time;
+
+    if (currentKey) {
+        const anim = FRAMES[currentKey];
+        const col = anim.col[frameIndex];
+        const row = anim.row;
+
+        // frame position
+        const frameX = col * frameWidth;
+        const frameY = row * frameHeight;
+
+        player.style.backgroundPosition = `-${frameX}px -${frameY}px`;
+
+        // movement with deltaTime
+        if (currentKey === "ArrowRight") posX += speed * delta;
+        if (currentKey === "ArrowLeft") posX -= speed * delta;
+        if (currentKey === "ArrowUp") posY -= speed * delta;
+        if (currentKey === "ArrowDown") posY += speed * delta;
+
+        player.style.transform = `translate3d(${posX}px, ${posY}px,0)`;
+
+        animationTimer += delta;
+        if (animationTimer > animationSpeed) {
+            animationTimer = 0;
+            frameIndex++;
+            if (frameIndex >= anim.col.length) frameIndex = 0;
+        }
+    }
+    requestAnimationFrame(update);
+}
+update(0);
