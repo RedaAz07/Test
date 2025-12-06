@@ -31,7 +31,7 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("keyup", (e) => {
     if (currentKey === e.key) {
         console.log('ggggggggggz');
-        
+
         currentKey = null;
         frameIndex = 0;
     }
@@ -54,7 +54,7 @@ function update(time) {
         const frameX = col * frameWidth;
         const frameY = row * frameHeight;
 
-        player.style.backgroundPosition = `-${frameX}px -${frameY}px`;
+        player.style.backgroundPosition = `-${frameX + 5}px -${frameY + 13}px`;
 
         // movement with deltaTime
         if (currentKey === "ArrowRight") posX += speed * delta;
